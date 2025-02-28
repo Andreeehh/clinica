@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exame Médico Ocupacional</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <!-- Favicon para diferentes dispositivos -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon-16x16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
+</head>
+<body>
+    <!-- Topo fixo: Título e botões de tabs -->
+    <div class="fixed-top-section">
+        <div class="container">
+            <h1 class="text-center mb-4">Exame Médico Ocupacional</h1>
+            <!-- Abas com nav-underline -->
+            <nav class="nav nav-underline justify-content-around">
+                <a class="nav-link active" id="tabDadosPaciente" onclick="openTab(event, 'DadosPaciente')">Dados do Paciente</a>
+                <a class="nav-link" id="tabDadosExame" onclick="openTab(event, 'DadosExame')">Dados do Exame</a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Conteúdo scrollável das abas -->
+    <div class="scrollable-tabs">
+        <div class="container">
+            <form action="{{ url_for('save_exam') }}" method="POST" id="examForm">
+                <!-- Aba Dados do Paciente -->
+                <div id="DadosPaciente" class="tabcontent">
+                    <h2 class="mt-4">Dados do Paciente</h2>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>CPF:</label>
+                                <input type="text" class="form-control" id="cpf" name=cpf value="{{ patient['cpf'] }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Nome:</label>
+                                <input type="text" class="form-control" id="nome" value="{{ patient['name'] }}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Data de Nascimento:</label>
+                                <input type="date" class="form-control" id="data_nascimento" value="{{ patient['dob'] }}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>RG:</label>
+                                <input type="text" class="form-control" id="rg" value="{{ patient['rg'] }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Rua:</label>
+                                <input type="text" class="form-control" id="rua" value="{{ patient['street'] }}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Bairro:</label>
+                                <input type="text" class="form-control" id="bairro" value="{{ patient['neighborhood'] }}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Número:</label>
+                                <input type="text" class="form-control" id="numero" value="{{ patient['street_number'] }}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Telefone:</label>
+                                <input type="text" class="form-control" id="telefone" value="{{ patient['phone'] }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Novos campos: Tipo de Exame e Cargo/Função -->
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="tipo_exame">Tipo de Exame:</label>
+                                <select class="form-control" id="tipo_exame" name="exam_type">
+                                    <option value="Admissional" {% if queuePatient and queuePatient.exam_type == 'Admissional' %}selected{% endif %}>Admissional</option>
+                                    <option value="Demissional" {% if queuePatient and queuePatient.exam_type == 'Demissional' %}selected{% endif %}>Demissional</option>
+                                    <option value="Periódico" {% if queuePatient and queuePatient.exam_type == 'Periódico' %}selected{% endif %}>Periódico</option>
+                                    <option value="Retorno ao Trabalho" {% if queuePatient and queuePatient.exam_type == 'Retorno ao Trabalho' %}selected{% endif %}>Retorno ao Trabalho</option>
+                                    <option value="Mudança de Cargo/Função" {% if queuePatient and queuePatient.exam_type == 'Mudança de Cargo/Função' %}selected{% endif %}>Mudança de Cargo/Função</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="cargo">Cargo/Função:</label>
+                                <input type="text" class="form-control" id="cargo" name="job_type" value="{% if queuePatient %}{{ queuePatient.job_type }}{% endif %}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2>Dados da Empresa</h2>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>CNPJ:</label>
+                                <input type="text" class="form-control" id="cnpj" name="cnpj" value="{{ company['cnpj'] if company else '' }}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Razão Social:</label>
+                                <input type="text" class="form-control" id="razao_social" name="razao_social" value="{{ company['social_reason'] if company else '' }}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Telefone de Contato:</label>
+                                <input type="text" class="form-control" id="telefone_empresa" name="telefone_empresa" value="{{ company['phone'] if company else '' }}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Endereço:</label>
+                                <input type="text" class="form-control" id="endereco_empresa" name="endereco_empresa" value="{{ company['address'] if company else '' }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aba Dados do Exame -->
+                <div id="DadosExame" class="tabcontent" style="display: none;">
+                    <h3 class="mt-4">Histórico de Saúde</h3>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Antecedentes pessoais:</label>
+                                <input type="text" class="form-control" id="personal_background" name="personal_background" placeholder="Nada digno de nota">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Afastamento do trabalho:</label>
+                                <input type="text" class="form-control" id="absence_from_work" name="absence_from_work" placeholder="Nada digno de nota">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Cirurgia:</label>
+                                <input type="text" class="form-control" id="surgery" name="surgery" placeholder="Não">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Acidentes:</label>
+                                <input type="text" class="form-control" id="accidents" name="accidents" placeholder="Não">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>P.C.D.:</label>
+                                <input type="text" class="form-control" id="pcd" name="pcd" placeholder="Não">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Antecedentes trabalhistas:</label>
+                                <input type="text" class="form-control" id="professional_background" name="professional_background" placeholder="Nada digno de nota">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>H./V.:</label>
+                                <input type="text" class="form-control" id="hv" name="hv" placeholder="Nada digno de nota">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Queixas e duração:</label>
+                                <input type="text" class="form-control" id="complaints" name="complaints" placeholder="Nada digno de nota">
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Exames Físicos</h3>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Exame Físico:</label>
+                                <input type="text" class="form-control" id="fisical" name="fisical" placeholder="Nada digno de nota">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Pressão Arterial:</label>
+                                <input type="text" class="form-control" id="arterial_pressure" name="arterial_pressure"> mm Hg
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Frequência Cardíaca:</label>
+                                <input type="number" class="form-control" id="heart_rate" name="heart_rate"> BPM
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Visão</h3>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Visão Direito Perto:</label>
+                                <input type="text" class="form-control" id="visao_dir_perto" name="visao_dir_perto" >
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Visão Direito Longe:</label>
+                                <input type="text" class="form-control" id="visao_dir_longe" name="visao_dir_longe" >
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Com Óculos Direito Perto:</label>
+                                <input type="text" class="form-control" id="oculos_dir_perto" name="oculos_dir_perto" >
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Com Óculos Direito Longe:</label>
+                                <input type="text" class="form-control" id="oculos_dir_longe" name="oculos_dir_longe" >
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Visão Esquerdo Perto:</label>
+                                <input type="text" class="form-control" id="visao_esq_perto" name="visao_esq_perto" >
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Visão Esquerdo Longe:</label>
+                                <input type="text" class="form-control" id="visao_esq_longe" name="visao_esq_longe" >
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Com Óculos Esquerdo Perto:</label>
+                                <input type="text" class="form-control" id="oculos_esq_perto" name="oculos_esq_perto" >
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Com Óculos Esquerdo Longe:</label>
+                                <input type="text" class="form-control" id="oculos_esq_longe" name="oculos_esq_longe" >
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Outros Exames</h3>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Aparelho Respiratório:</label>
+                                <input type="text" class="form-control" id="respiratory_system" name="respiratory_system" placeholder="Nada digno de nota">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Aparelho Circulatório:</label>
+                                <input type="text" class="form-control" id="circulatory_system" name="circulatory_system" placeholder="Nada digno de nota">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Abdomen:</label>
+                                <input type="text" class="form-control" id="abdomen" name="abdomen" placeholder="Nada digno de nota">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Aparelho Osteoarticular:</label>
+                                <input type="text" class="form-control" id="osteoarticular_system" name="osteoarticular_system" placeholder="Nada digno de nota">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" name="result" id="resultField">
+            </form>
+        </div>
+    </div>
+    
+    <!-- Parte inferior fixa: Resultado e botão de salvar -->
+    <div class="fixed-bottom-section">
+        <div class="container">
+            <div class="row align-items-center justify-content-center">
+                <!-- Label "Resultado" -->
+                <div class="col-auto">
+                    <label class="mb-0">Resultado:</label>
+                </div>
+                <!-- Combobox de Resultado -->
+                <div class="col-auto">
+                    <select class="form-control" id="resultado" name="result">
+                        <option value="Apto">Apto(a)</option>
+                        <option value="Inapto">Inapto(a)</option>
+                    </select>
+                </div>
+                <!-- Botão Salvar -->
+                <div class="col-auto">
+                    <button type="button" class="btn btn-primary" onclick="submitExam()">Finalizar Exame</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+
+        
+        function submitExam() {
+            var resultValue = document.getElementById("resultado").value;
+            document.getElementById("resultField").value = resultValue;
+
+            var formData = new FormData(document.getElementById("examForm"));
+
+            fetch("{{ url_for('save_exam') }}", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Erro ao salvar o exame");
+                }
+                return response.blob(); // Recebe o PDF como um blob
+            })
+            .then(blob => {
+                // Cria um link temporário para o blob
+                const url = window.URL.createObjectURL(blob);
+
+                // Abre o PDF em uma nova guia
+                const newWindow = window.open(url, '_blank');
+
+                // Aguarda o carregamento do PDF na nova guia
+                newWindow.onload = () => {
+                    // Aciona a impressão
+                    newWindow.print();
+
+                    // Redireciona para a rota /doctor após a impressão
+                    window.location.href = "{{ url_for('doctor') }}";
+                };
+            })
+            .catch(error => {
+                console.error("Erro ao salvar o exame:", error);
+                // Redireciona para a rota /doctor mesmo em caso de erro
+                window.location.href = "{{ url_for('doctor') }}";
+            });
+        }
+
+
+    
+
+
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+
+            // Oculta todos os conteúdos das tabs
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            // Remove a classe "active" de todas as tabs
+            tablinks = document.getElementsByClassName("nav-link");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+
+            // Exibe o conteúdo da tab atual e adiciona a classe "active" à tab clicada
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.classList.add("active");
+        }
+
+        // Define a primeira tab como ativa ao carregar a página
+        document.getElementById("tabDadosPaciente").classList.add("active");
+        document.getElementById("DadosPaciente").style.display = "block";
+    </script>
+</body>
+</html>

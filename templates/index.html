@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clínica Médica</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- CSS Personalizado -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <!-- SweetAlert CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.2/dist/sweetalert2.min.css">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <!-- Favicon para diferentes dispositivos -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon-16x16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
+</head>
+<body>
+    <div class="container d-flex flex-column align-items-center justify-content-center vh-100">
+        <h1 class="mb-4">Bem-vindo à Clínica Médica</h1>
+        <nav class="d-flex flex-column align-items-center">
+            <a class="btn btn-primary mb-3" href="{{ url_for('patient_form') }}">Inserir Paciente</a>
+            <a class="btn btn-primary mb-3" href="{{ url_for('queue_page') }}">Fila de Atendimento</a>
+            <a class="btn btn-primary" href="{{ url_for('doctor') }}">Interface do Médico</a>
+        </nav>
+    </div>
+
+    <!-- SweetAlert JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.2/dist/sweetalert2.all.min.js"></script>
+    <script>
+        // Verifique se o parâmetro "success" está presente na URL
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("success") === "true") {
+            Swal.fire({
+                icon: 'success',
+                title: 'Paciente Cadastrado com Sucesso!',
+                text: 'Os dados do paciente foram armazenados corretamente.',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                // Remove o parâmetro "success" da URL sem recarregar a página
+                const newUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
+            });
+        }
+    </script>
+</body>
+</html>

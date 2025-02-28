@@ -1,0 +1,6 @@
+Flask==2.3.2
+pymongo==4.5.0
+pytz==2023.3
+reportlab==4.0.4
+gunicorn==21.2.0
+python-dotenv==1.0.0

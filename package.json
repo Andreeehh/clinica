@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "cpf-cnpj-validator": "^1.0.3",
+    "sweetalert2": "^11.17.2"
+  }
+}

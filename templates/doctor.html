@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interface do Médico</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- CSS Personalizado -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <!-- Favicon para diferentes dispositivos -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon-16x16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
+</head>
+<body>
+    <!-- Botão de Voltar no canto superior esquerdo -->
+    <div class="position-absolute top-0 start-0 m-3">
+        <a href="{{ url_for('index') }}" class="btn btn-voltar">Voltar</a>
+    </div>
+    <div class="container d-flex flex-column align-items-center justify-content-center vh-100">
+        <h1 class="mb-4 text-center" style="width: 400px;">Próximo Paciente</h1>
+        <form action="{{ url_for('attend_patient') }}" method="POST" id="doctor" class="text-center" style="width: 400px;">
+            <!-- Card para exibir as informações do próximo paciente -->
+            <div class="card mb-4">
+                <div class="card-body" id="nextPatient">
+                    <p class="card-text">Carregando próximo paciente...</p>
+                </div>
+            </div>
+            <!-- Botão para atender o paciente -->
+            <button type="submit" id="submitButton" class="btn btn-primary w-100" style="display: none;">Atender Paciente</button>
+        </form>
+    </div>
+
+    <script>
+        async function loadNextPatient() {
+            const response = await fetch('/get_queue');
+            const queue = await response.json();
+            const patientDiv = document.getElementById('nextPatient');
+
+            if (queue.length > 0) {
+                const nextPatient = queue[0]; // Primeiro da fila
+                patientDiv.innerHTML = `
+                    <p class="card-text"><strong>Nome:</strong> ${nextPatient.name}</p>
+                    <p class="card-text"><strong>CPF:</strong> ${nextPatient.cpf}</p>
+                    <p class="card-text"><strong>Entrada:</strong> ${new Date(nextPatient.entry_time).toLocaleTimeString()}</p>
+                `;
+                document.getElementById('submitButton').style.display = 'block'; // Exibe o botão
+            } else {
+                patientDiv.innerHTML = '<p class="card-text">Nenhum paciente na fila.</p>';
+                document.getElementById('submitButton').style.display = 'none'; // Oculta o botão
+            }
+        }
+
+        // Atualiza o próximo paciente a cada 5 segundos
+        setInterval(loadNextPatient, 5000);
+        loadNextPatient(); // Carrega o próximo paciente ao abrir a página
+    </script>
+</body>
+</html>

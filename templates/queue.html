@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fila de Atendimento</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <!-- Favicon para diferentes dispositivos -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon-16x16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
+</head>
+<body >
+    <!-- Topo fixo: Título -->
+    <div class="fixed-top-section">
+        <div class="container">
+            <h1 class="text-center mb-4">Fila de Atendimento</h1>
+        </div>
+    </div>
+
+    <!-- Conteúdo principal: Fila de pacientes -->
+    <div class="container-fluid h-100">
+        <div class="row h-100 justify-content-center align-items-center">
+            <div class="col-12">
+                <div id="queue" class="queue-container">
+                    <!-- A fila será carregada aqui via JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        async function loadQueue() {
+            const response = await fetch('/get_queue');
+            const queue = await response.json();
+            const queueDiv = document.getElementById('queue');
+            queueDiv.innerHTML = '';
+
+            if (queue.length > 0) {
+                // Limita a exibição a 5 pacientes
+                const maxPatients = 5;
+                const patientsToShow = queue.slice(0, maxPatients);
+
+                patientsToShow.forEach((patient, index) => {
+                    const patientCard = document.createElement('div');
+                    patientCard.className = `card mb-3 ${index === 0 ? 'bg-primary text-white' : 'bg-light'}`;
+                    patientCard.innerHTML = `
+                        <div class="card-body">
+                            <h5 class="card-title">${index === 0 ? 'Próximo a ser atendido' : `Posição ${index + 1}`}</h5>
+                            <p class="card-text">
+                                <strong>Nome:</strong> ${patient.name}<br>
+                                <strong>CPF:</strong> ${patient.cpf}<br>
+                                <small>Entrada: ${new Date(patient.entry_time).toLocaleTimeString()}</small>
+                            </p>
+                        </div>
+                    `;
+                    queueDiv.appendChild(patientCard);
+                });
+
+                // Exibe uma mensagem se houver mais pacientes na fila
+                if (queue.length > maxPatients) {
+                    const remainingPatients = queue.length - maxPatients;
+                    const remainingDiv = document.createElement('div');
+                    remainingDiv.className = 'text-center mt-3';
+                    remainingDiv.innerHTML = `<p>+ ${remainingPatients} paciente(s) na fila.</p>`;
+                    queueDiv.appendChild(remainingDiv);
+                }
+            } else {
+                queueDiv.innerHTML = '<p class="text-center">Nenhum paciente na fila.</p>';
+            }
+        }
+
+        // Atualiza a fila a cada 5 segundos
+        setInterval(loadQueue, 5000);
+        loadQueue(); // Carrega a fila ao abrir a página
+    </script>
+</body>
+</html>

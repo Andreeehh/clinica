@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Empresa</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <!-- Favicon para diferentes dispositivos -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon-16x16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
+</head>
+<body>
+    <h1>Cadastro de Empresa</h1>
+    <form action="{{ url_for('add_company') }}" method="POST">
+        <label for="name">Nome:</label>
+        <input type="text" id="name" name="name" required><br>
+
+        <label for="social_reason">Razão Social:</label>
+        <input type="text" id="social_reason" name="social_reason" required><br>
+
+        <label for="cnpj">CNPJ:</label>
+        <input type="text" id="cnpj" name="cnpj" required><br>
+
+        <label for="phone">Telefone:</label>
+        <input type="text" id="phone" name="phone" required><br>
+
+        <label for="address">Endereço:</label>
+        <input type="text" id="address" name="address" required><br>
+
+        <button type="submit">Cadastrar</button>
+    </form>
+</body>
+</html>

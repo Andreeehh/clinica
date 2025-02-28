@@ -1,0 +1,151 @@
+body {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fa;
+  padding: 10px;
+}
+
+.fixed-top-section {
+  background: white;
+  z-index: 1000;
+  padding: 10px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.fixed-bottom-section {
+  background: white;
+  z-index: 1000;
+  padding: 20px 0;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.scrollable-tabs {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 0;
+}
+
+.form-group label {
+  font-weight: bold;
+}
+
+h1 {
+  text-align: center;
+}
+
+/* Estilos das Tabs */
+.nav-underline {
+  display: flex;
+  justify-content: center;
+  border-bottom: 2px solid #ddd; /* Linha inferior para as tabs */
+}
+
+.nav-link {
+  color: #000; /* Cor do texto normal */
+  text-decoration: none;
+  padding: 10px 20px;
+  margin: 0 10px;
+  position: relative;
+  transition: color 0.3s ease-in-out; 
+}
+
+.nav-link:hover {
+  color: #007bff; /* Cor do texto ao passar o mouse */
+  cursor: pointer;
+}
+
+.nav-link.active {
+  font-weight: bold; /* Texto em negrito quando ativo */
+  color: #000; /* Cor do texto da tab ativa */
+}
+
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px; /* Alinhar com a borda inferior */
+  width: 100%;
+  height: 2px;
+  background-color: #007bff; /* Cor do underline */
+}
+
+/* Efeito de hover para simular clique */
+.nav-link:hover::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 2px;
+  background-color: #007bff; /* Cor do underline ao passar o mouse */
+  opacity: 0.5; /* Opacidade reduzida para o hover */
+  transition: opacity 0.3s ease-in-out;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: bold;
+}
+
+.form-control {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.btn-primary {
+  width: 100%;
+}
+
+.container-fluid {
+  height: 80%; /* Ocupa toda a altura disponível */
+  overflow-y: auto;  /* Ajusta a altura para ocupar o espaço restante */
+  padding: 20px;
+}
+
+.queue-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.card {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card.bg-primary {
+  background-color: #007bff !important;
+  color: white;
+}
+
+.card.bg-light {
+  background-color: #f8f9fa !important;
+}
+
+/* Exemplo de estilo personalizado para o botão Voltar */
+.btn-voltar {
+  background-color: #6c757d; /* Cor de fundo */
+  color: white; /* Cor do texto */
+  border: none; /* Remove a borda */
+  padding: 10px 20px; /* Aumenta o padding */
+  border-radius: 5px; /* Bordas arredondadas */
+}
+
+.btn-voltar:hover {
+  background-color: #5a6268; /* Cor de fundo ao passar o mouse */
+}
